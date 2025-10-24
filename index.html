@@ -1,51 +1,29 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
+<html lang="pt-BR">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cruzadinha Literária Interativa</title>
+    <title>Cruzadinha Interativa</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="words.js" defer></script>
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <h1> Letrix </h1>
+  </head>
+  
+  <body>
+  <h1>Cruzadinha Interativa! 🧩</h1>
+  
+    <div class="jogo-container">
+      <div id="grade-cruzadinha" class="grade-cruzadinha">
+      </div> 
+      
+      <div id="dicas-container" class="dicas-container">
+        <h2>Dicas:</h2>
+         <ul id="lista-dicas"></ul>
+      </div> 
+    </div> <!--- Essa divisória é responsável
+      por deixar a grade e o bloco de dicas fiquem
+      organizados de forma visualmente agradável -->
     
-    <div class="instructions">
-        <p>Complete a cruzadinha com os títulos e personagens de obras literárias brasileiras.</p>
-        <p>Dica: Use as dicas ao lado para encontrar as palavras corretas.</p>
-    </div>
-
-    <div class="cruzadinha-container">
-        <div class="cruzadinha">
-            <table id="crosswordTable">
-                <!-- Dinamicamente gerado -->
-            </table>
-        </div>
-
-        <div class="dicas">
-            <h2>Dicas</h2>
-            
-            <h3>Horizontais</h3>
-            <ul>
-                <li><strong>2.</strong> A personagem de olhos de ressaca do romance <em>Dom Casmurro</em>.</li>
-                <li><strong>4.</strong> A virgem dos lábios de mel, lenda de José de Alencar.</li>
-            </ul>
-
-            <h3>Verticais</h3>
-            <ul>
-                <li><strong>1.</strong> O título que Bento Santiago recebe dos amigos.</li>
-                <li><strong>3.</strong> Sobrenome do principal autor do Realismo Brasileiro.</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="buttons-container">
-        <button id="checkButton">Verificar Respostas</button>
-        <button id="resetButton">Reiniciar</button>
-        <div id="message"></div>
-    </div>
-    <p id="palavra"> teste </p>
-    <p id="dica"> teste2 </p>
-</body>
+     <button id="verificar-btn">Verificar Respostas</button>
+     <div id="feedback" class="feedback"></div>
+      <script src="script.js"></script>
+  </body>
 </html>
