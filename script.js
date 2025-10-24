@@ -1,168 +1,257 @@
-document.getElementById("palavra").textContent = words[1].word;
-document.getElementById("dica").textContent = words[1].tip;
-
-function generateCrosswordBlocks(word, direction, startRow, startCol) {
-    const blocks = [];
-    const wordLength = word.length;
-
-    for (let i = 0; i < wordLength; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = '1';
-        input.setAttribute('data-word', word);
-        input.setAttribute('data-pos', i);
-        input.setAttribute('data-direction', direction);
-        input.setAttribute('data-row', startRow);
-        input.setAttribute('data-col', direction === 'horizontal' ? startCol + i : startCol);
-
-        blocks.push(input);
-    }
-
-    return blocks;
+/* Variáveis para facilitar a manutenção */
+:root {
+    /* Define o tamanho da célula do novo estilo (40px) */
+    --tamanho-celula: 35px; 
+    /* Cor principal do tema (Roxo) */
+    --cor-principal: #9032bb;
+    /* Um amarelo/creme suave para destacar a âncora */
+    --cor-ancora: #fff9c4;
+    --cor-fundo-body: #f5f7fa; /* Cor clara do gradiente do body */
 }
 
-function addFixedWordToCrossword(word, row, col, direction) {
-    const tableRows = document.querySelectorAll('#crosswordTable tr');
-    const wordLength = word.length;
-    
-    for (let i = 0; i < wordLength; i++) {
-        const rowIdx = direction === 'horizontal' ? row : row + i;
-        const colIdx = direction === 'horizontal' ? col + i : col;
-        
-        if (rowIdx < tableRows.length && colIdx < tableRows[rowIdx].children.length) {
-            const td = tableRows[rowIdx].children[colIdx];
-            td.classList.remove('vazio');
-            
-            const fixedWordSpan = document.createElement('span');
-            fixedWordSpan.className = 'fixed-word';
-            fixedWordSpan.textContent = word[i].toUpperCase();
-            td.appendChild(fixedWordSpan);
-        }
-    }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    /* Novo Gradiente de Fundo */
+    background: linear-gradient(135deg, #f5f7fa 0%, var(--cor-principal) 100%);
+    color: #333;
+    min-height: 100vh;
+    margin: 0; /* Removido o margin de 20px para melhor visualização */
+    padding: 20px;
 }
 
-// Dados da cruzadinha
-const crosswordData = [
-    { word: "domcasmurro", direction: "horizontal", number: 1, row: 0, col: 2 },
-    { word: "capitu", direction: "horizontal", number: 2, row: 1, col: 2 },
-    { word: "machado", direction: "vertical", number: 3, row: 2, col: 0 },
-    { word: "iracema", direction: "horizontal", number: 4, row: 3, col: 2 }
-];
-
-// Cria a cruzadinha
-function createCrossword() {
-    const table = document.getElementById('crosswordTable');
-    const gridSize = 13; // Tamanho da grade (13x13)
-    
-    // Cria a grade
-    for (let row = 0; row < gridSize; row++) {
-        const tr = document.createElement('tr');
-        for (let col = 0; col < gridSize; col++) {
-            const td = document.createElement('td');
-            td.className = 'vazio'; // Por padrão, todas as células são vazias
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-    
-    // Preenche com os blocos e números
-    crosswordData.forEach(item => {
-        const blocks = generateCrosswordBlocks(item.word, item.direction, item.row, item.col);
-        const tableRows = table.querySelectorAll('tr');
-        
-        blocks.forEach((input, index) => {
-            const row = item.direction === 'horizontal' ? item.row : item.row + index;
-            const col = item.direction === 'horizontal' ? item.col + index : item.col;
-            
-            if (row < gridSize && col < gridSize) {
-                const td = tableRows[row].children[col];
-                td.className = ''; // Remove a classe vazio
-                
-                // Adiciona o número se for a primeira posição
-                if (index === 0) {
-                    const numberSpan = document.createElement('span');
-                    numberSpan.className = 'numero';
-                    numberSpan.textContent = item.number;
-                    td.appendChild(numberSpan);
-                }
-                
-                td.appendChild(input);
-            }
-        });
-    });
+h1 {
+    color: var(--cor-principal);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-// Inicializa a cruzadinha
-createCrossword();
-
-// Foco automático no primeiro input
-const inputs = document.querySelectorAll('.cruzadinha input[type="text"]');
-if (inputs.length > 0) {
-    inputs[0].focus();
+/* Estilo para o container principal que contém a grade e as dicas (Novo layout) */
+.jogo-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 30px;
+    flex-wrap: wrap;
 }
 
-// Navegação dos inputs
-inputs.forEach((input, index) => {
-    input.addEventListener('input', () => {
-        const value = input.value.toUpperCase();
-        input.value = value;
-        
-        if (value && index < inputs.length - 1) {
-            inputs[index + 1].focus();
-        }
-    });
+/* -------------------------------------- */
+/* ESTILOS DA GRADE CRUZADINHA (DIV GRID) */
+/* -------------------------------------- */
 
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Backspace' && input.value === '' && index > 0) {
-            inputs[index - 1].focus();
-        }
-    });
-});
+/* Estilo para o container principal da grade */
+#grade-cruzadinha {
+    display: grid;
+    /* Adaptado para CSS Grid */
+    border-collapse: collapse; 
+   border: none; /* Agora sem borda */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: none;
+    /* Mantido o fundo transparente para funcionar com células vazias */
+   background-color: var(--cor-fundo-body); 
+    margin: 0 auto;
+}
 
-// Respostas corretas
-const respostas = {
-    "domcasmurro": ["D", "O", "M", "C", "A", "S", "M", "U", "R", "R", "O"],
-    "iracema": ["I", "R", "A", "C", "E", "M", "A"],
-    "capitu": ["C", "A", "P", "I", "T", "U"],
-    "machado": ["M", "A", "C", "H", "A", "D", "O"]
-};
-
-// Verificar respostas
-document.getElementById('checkButton').addEventListener('click', () => {
-    let todasCorretas = true;
+/* Estilo para cada célula (quadrado de letra) da cruzadinha */
+.celula {
+    width: var(--tamanho-celula);
+    height: var(--tamanho-celula);
     
-    inputs.forEach(input => {
-        const word = input.getAttribute('data-word');
-        const pos = input.getAttribute('data-pos');
-        const valor = input.value.toUpperCase();
-        
-        if (respostas[word] && respostas[word][pos] && valor === respostas[word][pos]) {
-            input.classList.add('correct');
-            input.classList.remove('incorrect');
-        } else if (valor !== '') {
-            input.classList.add('incorrect');
-            input.classList.remove('correct');
-            todasCorretas = false;
-        } else {
-            input.classList.remove('correct', 'incorrect');
-        }
-    });
+    border: 1px solid var(--cor-principal); /* Borda da célula */
     
-    const messageDiv = document.getElementById('message');
-    if (todasCorretas) {
-        messageDiv.textContent = "Parabéns! Todas as respostas estão corretas!";
-        messageDiv.className = "success";
-    } else {
-        messageDiv.textContent = "Algumas respostas estão incorretas. Tente novamente!";
-        messageDiv.className = "error";
-    }
-});
+    /* Centraliza o conteúdo (input e número) */
+    display: flex;
+    align-items: center;
+    justify-content: center
+    overflow: hidden;
+    background-color: #fff; /* Fundo branco da célula ocupada */
+    position: relative; /* ESSENCIAL: Permite posicionar o número da dica ABSOLUTAMENTE */
+   background-color: var(--cor-fundo-body);
+   background-color: var(--cor-fundo-body); 
+}
 
-// Reiniciar cruzadinha
-document.getElementById('resetButton').addEventListener('click', () => {
-    inputs.forEach(input => {
-        input.value = '';
-        input.classList.remove('correct', 'incorrect');
-    });
-    document.getElementById('message').textContent = '';
-});
+
+/* Células que não contêm palavras (Novo visual: Fundo roxo escuro) */
+.celula.vazia {
+   background-color: transparent !important; 
+    border: 1px solid transparent !important;
+}
+
+/* Estilo para o campo de input dentro da célula */
+.celula input {
+    width: 100%;
+    height: 100%;
+    
+    box-sizing: border-box; 
+    
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    
+    /* Estilo do Texto digitado (Novo visual: Roxo principal) */
+    color: var(--cor-principal); 
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    
+    background-color: transparent; 
+}
+
+/* Destaque visual do input focado (Novo visual: Sombra azul) */
+.celula input:focus {
+    background-color: #e3f2fd;
+    box-shadow: 0 0 0 2px #3498db;
+}
+
+/* Destaque visual da Palavra Âncora */
+.celula.palavra-ancora {
+    background-color: var(--cor-ancora) !important; 
+    border: 2px solid #A08D00 !important; 
+}
+
+/**
+ * Estilo para a numeração discreta no canto superior esquerdo (adaptado para .numero-dica)
+ */
+.numero-dica {
+    /* Posicionamento ABSOLUTO em relação à célula pai (.celula) */
+    position: absolute; 
+    font-size: 10px;
+    font-weight: bold;
+    top: 2px; 
+    left: 2px; 
+    color: #7f8c8d; /* Cor discreta para o número */
+    z-index: 2; /* Garante que fique acima do input */
+    pointer-events: none; /* Garante que o número não atrapalhe o clique/foco no input */
+}
+
+/* -------------------------------------- */
+/* ESTILOS DE FEEDBACK (CORRETO/INCORRETO)*/
+/* -------------------------------------- */
+
+/* Feedback Visual na Célula - Correto */
+.celula.correta {
+    background-color: #d4edda !important;
+    border: 2px solid #28a745 !important;
+}
+
+/* Feedback Visual na Célula - Incorreto */
+.celula.incorreta {
+    background-color: #f8d7da !important;
+    border: 2px solid #dc3545 !important;
+}
+
+/* Destaque para a palavra ATIVA ao clicar na dica ou navegar */
+.celula.destacado {
+    border: 3px solid #3498db !important; /* Borda azul */
+    background-color: #e6f2ff !important; /* Fundo azul claro para visualização */
+    z-index: 1; 
+}
+
+/* -------------------------------------- */
+/* ESTILOS DA ÁREA DE DICAS (NOVO VISUAL) */
+/* -------------------------------------- */
+
+.dicas-container {
+    width: 350px;
+    padding: 25px;
+    background-color: #fff;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    /* Novo Gradiente de Fundo */
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef); 
+}
+
+.dicas-container h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilo para a lista de dicas */
+#lista-dicas {
+    list-style: none;
+    padding: 0;
+}
+
+/* Estilo para cada item da dica */
+#lista-dicas li {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    padding: 10px;
+    background-color: #f1f8ff;
+    border-radius: 5px;
+    border-left: 4px solid #3498db;
+    cursor: pointer; /* Indica que é clicável */
+    transition: background-color 0.2s;
+}
+
+#lista-dicas li:hover {
+    background-color: #dbe9f7;
+}
+
+/* Estilo para o forte (número/orientação) */
+#lista-dicas li strong {
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+/* -------------------------------------- */
+/* ESTILOS DO BOTÃO E FEEDBACK GERAL */
+/* -------------------------------------- */
+
+#verificar-btn {
+    padding: 14px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 50px;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    /* Novo Gradiente do Botão (Verde) */
+    background: linear-gradient(to right, #27ae60, #2ecc71);
+    color: white;
+}
+
+#verificar-btn:hover {
+    background: linear-gradient(to right, #219653, #27ae60);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* Estilo para a mensagem de feedback */
+#feedback {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-height: 1.5em;
+}
+
+.feedback.certo {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #28a745;
+}
+
+.feedback.errado {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #dc3545;
+}
