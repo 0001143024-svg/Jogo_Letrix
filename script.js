@@ -1,8 +1,40 @@
 // ===================================================================================
-// 1. DADOS E CONFIGURAÇÕES GLOBAIS (LISTA INCLUÍDA AQUI)
+// 1. DADOS E CONFIGURAÇÕES GLOBAIS
 // ===================================================================================
 
 const listaDePalavras = [
+    // Sua lista de palavras completa (Mantenha todos os itens aqui)
+  
+    { palavra: "AURORA", dica: "Em 'A Moreninha', o nome da irmã de Carolina." },
+    { palavra: "OTELO", dica: "General mouro que é vítima de ciúme e manipulação na tragédia de Shakespeare." },
+    { palavra: "IRACEMA", dica: "A virgem dos lábios de mel, lenda do Brasil de José de Alencar." },
+    { palavra: "VERONA", dica: "Cidade onde se passa a trágica história de Romeu e Julieta." },
+    { palavra: "CLARICE", dica: "Escritora brasileira que explorava o fluxo de consciência e a introspecção feminina." },
+    { palavra: "DORIAN", dica: "Personagem obcecado pela beleza que tem seu retrato envelhecido em seu lugar." },
+    { palavra: "QUARTOS", dica: "Em 'Quarto de Despejo', o local onde Carolina de Jesus registrava seu cotidiano." },
+    { palavra: "OTAVIO", dica: "Nome do poeta mexicano, vencedor do Nobel, autor de 'O Labirinto da Solidão'." },
+    { palavra: "HOMERO", dica: "Poeta grego, tradicionalmente creditado como autor de 'Ilíada' e 'Odisseia'." },
+    { palavra: "MONTEIRO", dica: "O autor brasileiro criador do Sítio do Picapau Amarelo." },
+    { palavra: "EUGENIO", dica: "Em 'Madame Bovary', o nome do marido de Emma." },
+    { palavra: "HEATHCLIFF", dica: "O personagem apaixonado e vingativo de 'O Morro dos Ventos Uivantes'." },
+    { palavra: "OLIVER", dica: "O órfão faminto que pede 'mais um pouco' na obra de Dickens." },
+    { palavra: "AURORA", dica: "Deusa romana do amanhecer, nome de um livro de Érico Veríssimo." },
+    { palavra: "SHYLOCK", dica: "O agiota judeu de 'O Mercador de Veneza', de Shakespeare." },
+    { palavra: "GUIMARAES", dica: "Sobrenome do autor de 'Grande Sertão: Veredas'." },
+    { palavra: "PEREIRA", dica: "Em 'Afirma Pereira', o protagonista que se opõe ao fascismo em Portugal." },
+    { palavra: "VOLTAIRE", dica: "Filósofo do Iluminismo, autor de 'Cândido'." },
+    { palavra: "MEMORIAS", dica: "Obra póstuma de Brás Cubas, com capítulos numerados estranhamente." },
+    { palavra: "SETA", dica: "A arma primária de Katniss Everdeen, a arqueira de 'Jogos Vorazes'." }, 
+    { palavra: "SARAMAGO", dica: "Escritor português que ganhou o Nobel, autor de 'Ensaio Sobre a Cegueira'." },
+    { palavra: "DRUMMOND", dica: "Sobrenome do poeta de 'No Meio do Caminho' e 'A Rosa do Povo'." },
+    { palavra: "CANDIDO", dica: "Otimista ingênuo, protagonista da sátira filosófica de Voltaire." },
+    { palavra: "GABRIELA", dica: "Romance de Jorge Amado sobre uma cozinheira e seu 'cravo e canela'." },
+    { palavra: "SÃO", dica: "O nome do latifundiário, protagonista de 'São Bernardo', de Graciliano Ramos." },
+    { palavra: "MAUÁ", dica: "Barão da literatura brasileira, nome de uma peça de Marcos Damaceno." },
+    { palavra: "GRACILIANO", dica: "O autor de 'Vidas Secas' e 'São Bernardo'." },
+    { palavra: "MACUNAÍMA", dica: "O 'herói sem nenhum caráter' na obra de Mário de Andrade." },
+    { palavra: "QUINCAS", dica: "Em 'Quincas Borba', o filósofo que desenvolve a teoria do Humanitismo." },
+    { palavra: "FERNANDES", dica: "Sobrenome de Ariano, autor de 'Auto da Compadecida'." }, 
     { palavra: "ALICE", dica: "Garota que foi parar no País das Maravilhas." },
     { palavra: "ASLAM", dica: "Figura simbólica de sabedoria e liderança em Nárnia." },
     { palavra: "BELLA", dica: "Menina que se apaixona por um vampiro." },
@@ -33,25 +65,19 @@ const listaDePalavras = [
     { palavra: "PRIM", dica: "Irmã mais nova de Katniss." }
 ];
 
-// Variáveis globais para armazenar o estado do jogo.
 let palavrasNoJogo = []; 
 let celulasDaGrade = []; 
-const TAMANHO_MAX = 25; // Tamanho do Grid (25x25)
+const TAMANHO_MAX = 25; // Restaurado para o tamanho original e mais estável
 
-// Configurações de Dificuldade 
-const CONFIGURACOES = {
-    "PADRAO": { 
-        maxPalavras: 12, 
-        maxTentativas: 5, 
-        descricao: "Padrão: Mais palavras, mais cruzamentos aleatórios." 
-    }
-};
+// CONFIGURAÇÕES FIXAS (Prioridade: 10 Palavras)
+const MAX_PALAVRAS = 10; 
+const MAX_TENTATIVAS_CRUZAMENTO = 5; 
 
-let configuracaoAtual = CONFIGURACOES.PADRAO; 
-let modoDeJogoAtual = "PADRAO"; 
+// Variável para rastrear a direção ativa (Solução do Desvio - Prioridade 1)
+let direcaoAtiva = 'H'; 
 
 // ===================================================================================
-// 2. FUNÇÕES DE GERAÇÃO DA CRUZADINHA
+// 2. FUNÇÕES DE GERAÇÃO DA CRUZADINHA (LÓGICA INALTERADA)
 // ===================================================================================
 
 function sortearIndice(max) {
@@ -65,7 +91,8 @@ function tentarCruzarPalavra(palavraSecundaria) {
         
         const orientacaoNova = palavraExistente.orientacao === 'H' ? 'V' : 'H';
 
-        for (let i = 0; i < palavraSec.length; i++) {
+        // Tenta cruzar a palavra secundária em QUALQUER letra
+        for (let i = 0; i < palavraSec.length; i++) { 
             const letraSec = palavraSec[i];
             const indiceCruzamentoExistente = palavraExistente.palavra.indexOf(letraSec);
 
@@ -99,9 +126,8 @@ function tentarCruzarPalavra(palavraSecundaria) {
                     return novaPosicao;
                 }
             }
-        }
+        } 
     }
-
     return null; 
 }
 
@@ -136,13 +162,8 @@ function haColisao(novaPalavra, palavrasExistentes) {
 }
 
 
-/**
- * Função principal para sortear a Palavra Âncora e tentar cruzar as secundárias.
- * USA A LISTA DE PALAVRAS DEFINIDA NESTE ARQUIVO.
- */
 function sortearEEncaixarPalavras() {
     
-    // Usa a lista local
     const listaCompleta = listaDePalavras;
 
     if (!listaCompleta || listaCompleta.length === 0) {
@@ -157,7 +178,7 @@ function sortearEEncaixarPalavras() {
 
     const palavrasCandidatas = listaCompleta.filter((_, index) => index !== indiceAncora);
 
-    const limiteSecundarias = Math.min(configuracaoAtual.maxPalavras - 1, palavrasCandidatas.length);
+    const limiteSecundarias = Math.min(MAX_PALAVRAS - 1, palavrasCandidatas.length);
 
     const palavrasEmbaralhadas = [...palavrasCandidatas].sort(() => Math.random() - 0.5);
     
@@ -181,9 +202,9 @@ function sortearEEncaixarPalavras() {
     
     let secundariasRestantes = secundariasParaEncaixar;
     let tentativasDeEncaixe = 0;
-    const MAX_TENTATIVAS = secundariasParaEncaixar.length * configuracaoAtual.maxTentativas; 
+    const MAX_TENTATIVAS_TOTAL = secundariasParaEncaixar.length * MAX_TENTATIVAS_CRUZAMENTO; 
 
-    while (secundariasRestantes.length > 0 && tentativasDeEncaixe < MAX_TENTATIVAS) {
+    while (secundariasRestantes.length > 0 && tentativasDeEncaixe < MAX_TENTATIVAS_TOTAL) {
         const palavraSecundaria = secundariasRestantes.shift(); 
         tentativasDeEncaixe++;
 
@@ -202,7 +223,7 @@ function sortearEEncaixarPalavras() {
 
 
 // ===================================================================================
-// 3. FUNÇÕES DE MONTAGEM E INTERAÇÃO VISUAL
+// 3. FUNÇÕES DE MONTAGEM E INTERAÇÃO VISUAL (FOCO INTELIGENTE)
 // ===================================================================================
 
 function montarGrade() {
@@ -299,6 +320,9 @@ function destacarPalavra(event) {
     const orientacao = target.dataset.orientacao;
     const palavra = target.dataset.palavra;
 
+    // Define a direção ativa ao clicar na dica
+    direcaoAtiva = orientacao; 
+
     for (let i = 0; i < palavra.length; i++) {
         let l = (orientacao === 'H') ? linha : (linha + i);
         let c = (orientacao === 'H') ? (coluna + i) : coluna;
@@ -322,14 +346,15 @@ function focarNaProximaCelula(event) {
     let coluna = parseInt(inputAtual.dataset.coluna);
     
     if (inputAtual.value) {
-        const orientacao = encontrarOrientacaoDaCelula(linha, coluna);
+        const orientacaoNaCelula = encontrarOrientacaoDaCelula(linha, coluna);
         
         let proximaLinha = linha;
         let proximaColuna = coluna;
         
-        if (orientacao.includes('H')) {
+        // Foco automático respeita a direção ativa (Prioridade 1)
+        if (direcaoAtiva === 'H' && orientacaoNaCelula.includes('H')) {
             proximaColuna++;
-        } else if (orientacao.includes('V')) {
+        } else if (direcaoAtiva === 'V' && orientacaoNaCelula.includes('V')) {
             proximaLinha++;
         }
         
@@ -415,7 +440,7 @@ function verificarTudo() {
 
 
 // ===================================================================================
-// 5. FUNÇÕES DE NAVEGAÇÃO POR TECLADO
+// 5. FUNÇÕES DE NAVEGAÇÃO POR TECLADO (BACKSPACE CORRIGIDO)
 // ===================================================================================
 
 function moverFocoComSeta(event) {
@@ -435,23 +460,34 @@ function moverFocoComSeta(event) {
     switch (event.key) {
         case 'ArrowRight':
             proximaColuna = coluna + 1;
+            direcaoAtiva = 'H'; 
             break;
         case 'ArrowLeft':
             proximaColuna = coluna - 1;
+            direcaoAtiva = 'H'; 
             break;
         case 'ArrowDown':
         case 'Enter': 
             proximaLinha = linha + 1;
+            direcaoAtiva = 'V'; 
             break;
         case 'ArrowUp':
             proximaLinha = linha - 1;
+            direcaoAtiva = 'V'; 
             break;
-        case 'Backspace': 
-            if (!inputAtual.value) {
+            
+        case 'Backspace': // CORREÇÃO (Prioridade 3)
+            if (inputAtual.value) {
+                inputAtual.value = ''; // Apaga a letra
+                return; // Não move o foco se apagou a letra
+            } else {
+                // Se o input está vazio, move o foco para trás
                 const orientacao = encontrarOrientacaoDaCelula(linha, coluna);
-                if (orientacao.includes('H')) {
+                const direcaoBackspace = orientacao.includes(direcaoAtiva) ? direcaoAtiva : orientacao[0]; 
+                
+                if (direcaoBackspace === 'H') {
                     proximaColuna = coluna - 1; 
-                } else if (orientacao.includes('V')) {
+                } else if (direcaoBackspace === 'V') {
                     proximaLinha = linha - 1; 
                 }
             }
@@ -512,9 +548,9 @@ function iniciarJogo() {
         const primeiroInput = document.querySelector('#grade-cruzadinha input');
         if(primeiroInput) primeiroInput.focus();
     } else {
-        // Se a geração falhar (por não conseguir cruzar o mínimo de palavras), tenta novamente
+        // Tenta novamente, o tamanho 25x25 deve ser mais estável
         console.warn("Falha ao gerar cruzadinha. Tentando novamente...");
-        setTimeout(iniciarJogo, 10); 
+        setTimeout(iniciarJogo, 100); 
     }
 }
 
